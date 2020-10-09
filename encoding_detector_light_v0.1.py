@@ -46,14 +46,20 @@ elif len(sys.argv) == 3:
         file_full_path = sys.argv[1]
 else:
     file_full_path = input("Enter full path to file: ")
-    while not os.path.exists(file_full_path):
-        file_full_path = input("Enter proper full file path!\n")
+
+while not os.path.exists(file_full_path):
+    file_full_path = input("Enter proper full file path!\n")
 
 """
 Global determine
 """
 with open(file_full_path, "rb") as f:
-    msg = f.read()
+    try:
+        msg = f.read()
+
+    except MemoryError:
+        msg = f.read(1000000000) # 1.000.000.000
+
     result = chardet.detect(msg)
     # print("Proposal: ", result['encoding'])
     # print("Confidence: ", result['confidence'])
