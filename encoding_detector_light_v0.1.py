@@ -53,12 +53,24 @@ while not os.path.exists(file_full_path):
 """
 Global determine
 """
+work = True
+byte_num = int(-1) # number of bytes for .read()
 with open(file_full_path, "rb") as f:
-    try:
-        msg = f.read()
+    while work:
+        try:
+            if byte_num == -1: # to make code work a bit faster
+                msg = f.read(byte_num)
+            else:
+                msg = f.read(byte_num) + f.readline()
+            # print("delecious")
+            work = False
 
-    except MemoryError:
-        msg = f.read(1000000000) # 1.000.000.000
+        except MemoryError:
+            if byte_num == -1:
+                byte_num = 10000000000 # 1.000.000.000
+            else:
+                byte_num = int(byte_num / 2)
+            # print("doesn't fit, trying", byte_num)
 
     result = chardet.detect(msg)
     # print("Proposal: ", result['encoding'])
