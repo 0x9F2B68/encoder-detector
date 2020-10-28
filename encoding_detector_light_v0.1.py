@@ -46,14 +46,32 @@ elif len(sys.argv) == 3:
         file_full_path = sys.argv[1]
 else:
     file_full_path = input("Enter full path to file: ")
-    while not os.path.exists(file_full_path):
-        file_full_path = input("Enter proper full file path!\n")
+
+while not os.path.exists(file_full_path):
+    file_full_path = input("Enter proper full file path!\n")
 
 """
 Global determine
 """
+work = True
+byte_num = int(-1) # number of bytes for .read()
 with open(file_full_path, "rb") as f:
-    msg = f.read()
+    while work:
+        try:
+            if byte_num == -1: # to make code work a bit faster
+                msg = f.read(byte_num)
+            else:
+                msg = f.read(byte_num) + f.readline()
+            # print("delecious")
+            work = False
+
+        except MemoryError:
+            if byte_num == -1:
+                byte_num = 10000000000 # 1.000.000.000
+            else:
+                byte_num = int(byte_num / 2)
+            # print("doesn't fit, trying", byte_num)
+
     result = chardet.detect(msg)
     # print("Proposal: ", result['encoding'])
     # print("Confidence: ", result['confidence'])
